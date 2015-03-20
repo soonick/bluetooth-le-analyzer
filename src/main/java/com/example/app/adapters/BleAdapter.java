@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.TextView;
 import java.util.ArrayList;
 
 /**
@@ -43,9 +44,24 @@ public class BleAdapter extends BaseAdapter {
    * {@inheritDoc}
    */
   public View getView(int position, View convertView, ViewGroup parent) {
+    ViewHolder vh;
+    String name;
+
     if (convertView == null) {
-      convertView = inflater.inflate(R.layout.ble_item, null);
+      convertView = inflater.inflate(R.layout.ble_item, parent, false);
+      vh = new ViewHolder();
+      vh.deviceName = (TextView)convertView.findViewById(R.id.device_name);
+      convertView.setTag(vh);
+    } else {
+      vh = (ViewHolder)convertView.getTag();
     }
+
+    BluetoothDevice current = (BluetoothDevice)getItem(position);
+    name = current.getName();
+    if (name == null) {
+      name = current.getAddress();
+    }
+    vh.deviceName.setText(name);
 
     return convertView;
   }
@@ -69,5 +85,12 @@ public class BleAdapter extends BaseAdapter {
    */
   public int getCount() {
     return devices.size();
+  }
+
+  /**
+   * This class is used to avoid costly calls to findViewById
+   */
+  private static class ViewHolder {
+    public TextView deviceName;
   }
 }
